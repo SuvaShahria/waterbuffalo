@@ -1,7 +1,7 @@
 CS214 Project 3: Basic Data Sorter – server/client
 
 Client - Reads through directories and connects to a server to send the CSV files.
-Server - Sorts the CSV files and sends the files back.
+Server - Sorts the CSV files and sends the files back in a single sorted CSV
 
 Choose Protocol: Data to sort, column to sort, request for fully sorted list
 	- Denote a seperator to recognize data from commands. ie: seperate the 'data to sort' from the 'column name' to sort. 
