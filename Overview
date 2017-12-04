@@ -1,0 +1,33 @@
+CS214 Project 3: Basic Data Sorter – server/client
+
+Client - Reads through directories and connects to a server to send the CSV files.
+Server - Sorts the CSV files and sends the files back.
+
+Choose Protocol: Data to sort, column to sort, request for fully sorted list
+	- Denote a seperator to recognize data from commands. ie: seperate the 'data to sort' from the 'column name' to sort. 
+	- Figure a method to substitute Control characters with '\' or work around them, as sockets do not transfer them well.
+
+a. parameters (5 flags):
+
+client (5 flags) -
+	-c to indicate sorting by column
+	-h to indicate hostname of server
+	-p indicates the port number the server is on
+	-d optional: directory to sort in
+	-o optional: drectory to output
+
+server (1 flag) -
+	-p indicates port number taken
+
+b. operation
+Client:
+Spawns a thread for each file found and create a search request, connect to server, send request to server, then wait for read back until file is sorted. Once all files are done, sends server another request to retrieve all sorted files. Then outputs single CSV File: AllFiles-sorted-<fieldname>.csv
+
+Server:
+Creates a thread for each connection to sort/store in server. When dump requested, all files should be merged into one sorted list to be sent back. Server stops running until SIGKILL.
+
+STDOUT:
+outputs all the ip addresses clients requests (use inet_ntoa)
+
+	- Two requests: client sends individual
+	- client receives large csv
