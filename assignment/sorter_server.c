@@ -15,14 +15,31 @@ int* c_socket;
 c_socket = (int*) arg;
 int cs = *c_socket;
 char rec[256];
+
+int colnumber = 0;
+	int tmp= 0;
+	read(cs,&tmp,sizeof(tmp));
+	colnumber = ntohl(tmp); // which col number to sort
+
+	//printf("this is %d\n",colnumber);
+
+	long bsize = 0;
+	long tmpbs = 0;
+	read(cs,&tmpbs,sizeof(tmpbs));
+	bsize = ntohl(tmpbs); // size of buffer
+	char buffer[bsize+1]; // make buffer
+	bzero(buffer,bsize);
+		read(cs,buffer,bsize);
+	buffer[bsize] = '\0';
+		printf("%s\n",buffer);
+
 /*char rec2[256];
 char* q= "gg";
 strcpy(rec2,q);
 */
-	read(cs,rec,256);
-	//rec[1]='\0';
-	printf("reading -x- %s--%zu\n",rec,strlen(rec));
-		write(cs,rec,256);
+	
+//printf("reading -x- %s--%zu\n",rec);
+		//write(cs,rec,256);
 }
 
 
@@ -134,8 +151,21 @@ printf("--%d\n",port_num);
 	printf("Client Port      : (%d)\n", port2);
 
 	
-	
+	int dump = 0;
+	int tmp= 0;
+	read(c_sock,&tmp,sizeof(tmp));
+	dump = ntohl(tmp);
+
+	//printf("%d\n", dump);	
+
+	if(dump == 0){
 	pthread_create(&tid[i], NULL, sorter, &c_sock);
+	}else{
+
+
+	}
+
+
 	i++;
 
 	}
