@@ -9,6 +9,22 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
+void sorter(void* arg){
+
+int* c_socket;
+c_socket = (int*) arg;
+int cs = *c_socket;
+char rec[256];
+/*char rec2[256];
+char* q= "gg";
+strcpy(rec2,q);
+*/
+	read(cs,rec,256);
+	//rec[1]='\0';
+	printf("reading -x- %s--%zu\n",rec,strlen(rec));
+		write(cs,rec,256);
+}
+
 
 
 int main (int argc, char* argv[]){
@@ -89,8 +105,11 @@ printf("--%d\n",port_num);
 	//inet6 size value i think its 46
 	    char ip_val[INET6_ADDRSTRLEN];
 	    int port2;
-	pthread_t tid[1000];
-	
+	pthread_t tid[500];
+	char sendt[256];
+	char* p = "water";	
+	strcpy(sendt,p);
+	//printf("%s",sendt);
 	while (1)
 	{
 		//store client ip info in c_adr
@@ -114,11 +133,16 @@ printf("--%d\n",port_num);
         printf("Client IP Address: (%s)\n", ip_val);
 	printf("Client Port      : (%d)\n", port2);
 
-	char rec[256];
-	read(c_sock,rec,256);
-	printf("reading - %s\n",rec);
 	
+	
+	pthread_create(&tid[i], NULL, sorter, &c_sock);
+	i++;
+
 	}
+
+	
+
+	
 
 	/* clean up */
 	close(s_sock);
