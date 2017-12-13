@@ -1,30 +1,7 @@
-
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-
-/* Socket Stuff */
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-
-/* others */
-#include <sys/types.h>
-
+#include "sorter_client.h"
 
 #define PORT 9000
 #define ADDR 127.0.0.1
-
-#include <sys/wait.h>
-
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <pthread.h>
-#include "sorter_thread.h"
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;

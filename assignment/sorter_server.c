@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
+#include "sorter_server.h"
+
 void sorter(void* arg){
 
 int* c_socket;
