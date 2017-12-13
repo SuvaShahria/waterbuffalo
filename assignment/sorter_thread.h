@@ -1,30 +1,40 @@
-
-
-#ifndef SORTER_THREAD_H
-#define SORTER_THREAD_H
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
+#include <stdlib.h>
 #include <ctype.h>
 
+#include <dirent.h>
+#include <unistd.h>
+#include <pthread.h>
 
+/* Socket Stuff */
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
-struct store{
-char* dirname;
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <fcntl.h>
 
+#ifndef SORTER_THREAD_H
+	#define SORTER_THREAD_H
 
-};
+	struct store {
+		char* dirname;
+	};
 
-typedef struct{
-    char** rToken;
-    char * rText;
-    size_t rowL;
-    size_t numc;
-}row;
+	typedef struct {
+	    char** rToken;
+	    char * rText;
+	    size_t rowL;
+	    size_t numc;
+	} row;
 
-void mergeSort(row* target, int col, int n);
-int isNum(char* string);
-
+	void mergeSort(row* target, int col, int n);
+	int isNum(char* string);
+	void sorter(void* arg);
+	void openDir(void* arg);
+	
 #endif
