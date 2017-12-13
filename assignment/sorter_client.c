@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 
 		if (strcmp(argv[k], "-d") == 0) {
 			char* tmp = argv[k+1];
-			pass->dirname = tmp;
+			pass->dirname = strcpy(pass->dirname, tmp);
 			d = 1;
 		}
 		
@@ -73,6 +73,14 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	
+	if (d == 0) {
+		getcwd(pass->dirname, sizeof(pass->dirname));
+	}
+
+	if (o == 0) {
+		getcwd(odir, sizeof(odir));
+	}
+
 	// first we send the server the column to sort on
 	sendSortCol();
 
@@ -209,17 +217,17 @@ void sendSortCol() {
 
 	memset(&serv_addr, '0', sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
+	serv_addr.sin_port = htons(PORT);
 
-    if (connect(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-    	printf("Failed to connect\n");
-    	return;
-    }
+	if (connect(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+		printf("Failed to connect\n");
+			return;
+		}
 
-    char *sendingCol = "SortColumn";
-    send(sock, sendingCol, strlen(sendingCol), 0);
-    send(sock, input, strlen(input), 0);
-    close(sock);
+	char *sendingCol = "SortColumn";
+	send(sock, sendingCol, strlen(sendingCol), 0);
+	send(sock, input, strlen(input), 0);
+	close(sock);
 }
 
 /*
@@ -264,7 +272,7 @@ void openDir(void* arg) {
 	int  dcounter=0;
 
 	char** csvpath = (char**) malloc(sizeof(char*) * 2000);
-    struct store** csv = (struct store**) malloc(sizeof(struct store*) * 256);
+	struct store** csv = (struct store**) malloc(sizeof(struct store*) * 256);
 	int csvcounter =0;
 
 	// check to see if path exists
@@ -289,10 +297,10 @@ void openDir(void* arg) {
 				strcat(dpath, di->d_name);
 
 				dirpath[dcounter] = malloc(strlen(dpath) + 1);
-			    dirpath[dcounter] = strcpy(dirpath[dcounter], dpath);
-			    directory[dcounter] = (struct store*) malloc(strlen(dpath) + 1);
-			    directory[dcounter]->dirname = dpath;
-			    dcounter++;
+				dirpath[dcounter] = strcpy(dirpath[dcounter], dpath);
+				directory[dcounter] = (struct store*) malloc(strlen(dpath) + 1);
+				directory[dcounter]->dirname = dpath;
+				dcounter++;
 			}
 
 			// current dirent is not a subdirectory
@@ -308,12 +316,12 @@ void openDir(void* arg) {
 					strcat(path2, di->d_name);
 					
 					//check to see if it is right csv file validCsv(path2)
-					if (1) { 
+					if (1) {
 						csvpath[csvcounter] = malloc(strlen(path2) + 1);
-					    csvpath[csvcounter] = strcpy(csvpath[csvcounter], path2);
+						csvpath[csvcounter] = strcpy(csvpath[csvcounter], path2);
 						csv[csvcounter] = (struct store*) malloc(strlen(path2) + 1);
-					    csv[csvcounter]->dirname = path2;
-					   	csvcounter++;
+						csv[csvcounter]->dirname = path2;
+						csvcounter++;
 					}
 				}
 			}
@@ -326,17 +334,17 @@ void openDir(void* arg) {
 	int test;
 	for (i = 0; i < dcounter; i++) {
 		test = pthread_create(&tids[i], NULL, (void *) &openDir, (void*) directory[i]);
-        if (test != 0) {
-            printf("Failed to create new thread.\n");
-        }    
+		if (test != 0) {
+			printf("Failed to create new thread.\n");
+		}
 	}
 
 	int j;
 	for (j = 0; j < csvcounter; j++) {
 		test = pthread_create(&csvtids[j], NULL, (void *) &sorter, (void*) csv[j]);	
-        if (test != 0) {
-            printf("Failed to create new thread.\n");
-        }    
+		if (test != 0) {
+			printf("Failed to create new thread.\n");
+		}
 	}
 
 	for (j = 0; j < csvcounter; j++) {
@@ -345,7 +353,6 @@ void openDir(void* arg) {
 	for (i = 0; i < dcounter; i++) {
 		pthread_join(tids[i], NULL);
 	}
-
 
 	for (i = 0; i < dcounter; i++) {
 		free(directory[i]);
