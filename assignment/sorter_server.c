@@ -8,8 +8,125 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include "sorter_thread.h"
 
-#include "sorter_server.h"
+
+
+
+
+
+
+char** tokenizer(char* tp, size_t numc){
+    
+
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    
+    char** str =(char**)malloc(sizeof(char*)* (numc + 1)); 
+    char* tmp =(char*)malloc(sizeof(char*)*500);
+	
+size_t quote=1;
+	
+
+    while(i<strlen(tp)){
+
+		if(tp[i]=='"' && quote==1){
+			quote=0;
+
+		
+		}
+				
+		else if(tp[i]=='"' && quote==0){
+			
+			str[k] = (char*)malloc((100)* sizeof(char));
+			int x =j-1;
+			
+			char* end;
+
+
+
+			strcpy(str[k],tmp);
+
+			memset(&tmp[0],0,strlen(tmp));
+			quote=1;
+			j=0;
+			k++;
+			i++;
+		}
+
+		
+        else if((tp[i]==',' || i ==strlen(tp)-1) && quote==1){
+            
+            if(!tmp){
+                tmp[0] = '\0';
+			}
+			if(i == strlen(tp)-1 && tp[i]!='\n' && tp[1] != ','){
+				tmp[j] = tp[i];
+				j++;
+			}
+           
+			str[k] = (char*)malloc((j+1) * sizeof(char));
+
+//wer
+		
+			int x = j-1;
+			char *txt = tmp;
+			char *end;
+			while(isspace(*txt)){
+			txt++;
+						
+			
+		}
+
+if(*txt==0){
+tmp =txt;
+}else{
+end=txt+x;
+while(end>txt && isspace(*end)){
+end--;
+}
+end++;
+*(end)=0;
+tmp=txt;
+}
+
+
+
+
+			strcpy(str[k],tmp);
+			memset(&tmp[0],0,strlen(tmp));			
+            j = 0;
+			k++;
+			if(tp[1]==',' && i==strlen(tp)-1){
+			tmp[0]='\0';
+			str[k]= (char*)malloc((j+1)*sizeof(char));
+			strcpy(str[k],tmp);
+			memset(&tmp[0],0,strlen(tmp));
+			}
+
+
+        }else{
+
+			if(j==0){
+				if(tp[i]==' '){
+					i++;
+					continue;
+				}				
+			}
+            tmp[j] = tp[i];
+			j++;
+		}
+        i++;
+	} 
+
+	free(tmp);
+
+    return str;
+}
+
+
+
 
 void sorter(void* arg){
 
@@ -33,15 +150,48 @@ int colnumber = 0;
 	bzero(buffer,bsize);
 		read(cs,buffer,bsize);
 	buffer[bsize] = '\0';
-		printf("%s\n",buffer);
 
-/*char rec2[256];
-char* q= "gg";
-strcpy(rec2,q);
-*/
-	
-//printf("reading -x- %s--%zu\n",rec);
-		//write(cs,rec,256);
+
+	char** store = (char**)malloc(sizeof(char*) * 1501);
+	int store_c = 0;
+	char *p;
+	p =strtok(buffer,"\n");
+	store[store_c]=p;
+
+	while(p = strtok(NULL,"\n")){
+		store_c++;
+	store[store_c]=p;
+	}
+		row *data;
+
+	data = (row*) malloc (sizeof(row) * 5000);
+	row tmpRow;
+	tmpRow.rText = (char*) malloc (sizeof(char) * 1500);
+	size_t curr_col =0;
+	size_t atRow=0; 
+	int rows = 0;
+	while(rows<=store_c){
+	strcpy(tmpRow.rText,store[rows]);	
+	tmpRow.rowL =strlen(tmpRow.rText);
+	tmpRow.rToken =(char**) malloc(sizeof(char *)* (28+1));
+	tmpRow.rToken =tokenizer(tmpRow.rText,28);
+
+
+			
+		data[rows] = tmpRow;
+				//printf("%s-----\n",data[x].rText);
+
+	rows++;
+	} 
+	//printf("%d---%d\n",colnumber,rows);
+	mergeSort(data, colnumber, rows);
+	int k = 0;
+	while(k<rows){
+				printf("%s-----\n",data[k].rText);
+	k++;
+	}
+
+
 }
 
 
@@ -105,7 +255,7 @@ printf("--%d\n",port_num);
 	}
 
 	
-	if (listen(s_sock, 100) < 0)
+	if (listen(s_sock, 300) < 0)
 	{
 
 		perror("listen");

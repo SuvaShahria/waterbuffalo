@@ -1,7 +1,30 @@
-#include "sorter_client.h"
+
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+
+/* Socket Stuff */
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
+/* others */
+#include <sys/types.h>
+
 
 #define PORT 9000
 #define ADDR 127.0.0.1
+
+#include <sys/wait.h>
+
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <pthread.h>
+#include "sorter_thread.h"
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
@@ -67,9 +90,11 @@ int sockfd;
 
 	fseek(fp,0,SEEK_END);//goes to end of csv	
 	long bsize = ftell(fp); //blinker position in csv
-	fseek(fp,0,SEEK_SET); //goes back to beg
+	fseek(fp,419,SEEK_SET); //goes back to beg
 	char * buffer = malloc(sizeof(char)* bsize);
 	fread(buffer, bsize, sizeof(char), fp); //write csv to buffer
+	int l = 1;
+	
 	int dump = 0;
 	int tmp = htonl(dump); // googled how to pass int
 	int tmp3 = htonl(bsize);	
@@ -79,7 +104,8 @@ int sockfd;
 	write(sockfd,&tmp2,sizeof(coln) ); // which coln
 	write(sockfd,&tmp3,sizeof(bsize) ); 
 	write(sockfd,buffer,bsize ); 
-			printf("%s\n",buffer);
+		
+	//printf("%s\n",buffer);
 	
 	
 
