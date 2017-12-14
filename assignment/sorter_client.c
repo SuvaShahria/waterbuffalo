@@ -97,7 +97,7 @@ int sockfd;
 	
 	int dump = 0;
 	int tmp = htonl(dump); // googled how to pass int
-	int tmp3 = htonl(bsize);	
+	long tmp3 = htonl(bsize);	
 	//printf("bsize %ld\n",bsize);
 
 	write(sockfd,&tmp,sizeof(dump) ); // to dump or not
@@ -464,10 +464,11 @@ if(o==0 ){
 	//printf("bsize %ld\n",bsize);
 
 	write(sockfd,&tmp,sizeof(dump) ); 
-	int bl = 0;	
-	int tmpbl =0;
+	long bl = 0;	
+	long tmpbl =0;
 	read(sockfd,&tmpbl,sizeof(tmpbl));
 	 bl = ntohl(tmpbl);
+	printf("%ld\n",bl);
 //	printf("%d bl\n",bl);
 	
 	char buf[bl+1];

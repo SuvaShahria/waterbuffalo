@@ -258,6 +258,7 @@ int i,j;
 
 i = 0;
 	 j = 0;
+
 	while(i < fc){
 		while(j < 28){
 			char* hold;
@@ -276,13 +277,15 @@ i = 0;
 		i++;
 		j = 0;
 	}
+
 	//printf("%d--\n",strlen(buffer)  );
 //	write(cs,buffer,fc*500);
-int bl = strlen(buffer);
-	int tmpbl = htonl(bl);
+long bl = strlen(buffer);
+	printf("%ld\n",bl);
+	long tmpbl = htonl(bl);
 	write(cs,&tmpbl,sizeof(bl));
 	write(cs,buffer,strlen(buffer));	
-	//printf("%s\n",buffer);
+	//printf("%s\n",buffer);*/
 finalcounter=0;
 memset(final,0,sizeof(final));
 
