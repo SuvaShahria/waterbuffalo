@@ -87,13 +87,13 @@ int sockfd;
 	}
 
 	fseek(fp,0,SEEK_END);//goes to end of csv	
-	long bsize = ftell(fp)-419; //blinker position in csv
+	long long bsize = ftell(fp)-419; //blinker position in csv
 	fseek(fp,419,SEEK_SET); //goes back to beg
 	char * buffer = malloc(sizeof(char)* bsize);
 	fread(buffer, bsize, sizeof(char), fp); //write csv to buffer
 	int l = 1;
-	long te = strlen(buffer);
-	long tp = 0;
+	long long te = strlen(buffer);
+	long long tp = 0;
 	while(tp<te){
 	if(buffer[tp] == '\n'){
 	buffer[tp] = '^';
@@ -104,7 +104,7 @@ int sockfd;
 	
 	int dump = 0;
 	int tmp = htonl(dump); // googled how to pass int
-	long tmp3 = htonl(bsize);	
+	long long tmp3 = htonl(bsize);	
 	//printf("bsize %ld\n",bsize);
 
 	write(sockfd,&tmp,sizeof(dump) ); // to dump or not
@@ -471,8 +471,8 @@ if(o==0 ){
 	//printf("bsize %ld\n",bsize);
 
 	write(sockfd,&tmp,sizeof(dump) ); 
-	long bl = 0;	
-	long tmpbl =0;
+	long long bl = 0;	
+	long long tmpbl =0;
 	read(sockfd,&tmpbl,sizeof(tmpbl));
 	 bl = ntohl(tmpbl);
 	//printf("%ld\n",bl);
@@ -482,8 +482,8 @@ if(o==0 ){
 	bzero(buf,bl+1);
 	read(sockfd,buf,bl);
 
-	long te = strlen(buf);
-	long tp = 0;
+	long long te = strlen(buf);
+	long long tp = 0;
 	while(tp<te){
 	if(buf[tp] == '^'){
 	buf[tp] = '\n';

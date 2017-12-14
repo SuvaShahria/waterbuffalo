@@ -148,8 +148,8 @@ int colnumber = 0;
 
 	//printf("this is %d\n",colnumber);
 
-	long bsize = 0;
-	long tmpbs = 0;
+	long long bsize = 0;
+	long long tmpbs = 0;
 	read(cs,&tmpbs,sizeof(tmpbs));
 	bsize = ntohl(tmpbs); // size of buffer
 	char buffer[bsize+1]; // make buffer
@@ -157,8 +157,8 @@ int colnumber = 0;
 		read(cs,buffer,bsize);
 
 
-	long te = strlen(buffer);
-	long tp = 0;
+	long long te = strlen(buffer);
+	long long tp = 0;
 	while(tp<te){
 	if(buffer[tp] == '^'){
 	buffer[tp] = '\n';
@@ -292,15 +292,15 @@ i = 0;
 
 	//printf("%d--\n",strlen(buffer)  );
 //	write(cs,buffer,fc*500);
-long bl = strlen(buffer);
+long long bl = strlen(buffer);
 	//printf("%ld\n",bl);
-	long tmpbl = htonl(bl);
+	long long tmpbl = htonl(bl);
 	write(cs,&tmpbl,sizeof(bl));
 
 
 	
-	long te = strlen(buffer);
-	long tp = 0;
+	long long te = strlen(buffer);
+	long long tp = 0;
 	while(tp<te){
 	if(buffer[tp] == '\n'){
 	buffer[tp] = '^';
