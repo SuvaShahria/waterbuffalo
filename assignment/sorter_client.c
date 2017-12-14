@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "sorter_thread.h"
+#include "sorter_client.h"
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
@@ -89,7 +89,7 @@ int sockfd;
 	}
 
 	fseek(fp,0,SEEK_END);//goes to end of csv	
-	long bsize = ftell(fp); //blinker position in csv
+	long bsize = ftell(fp)-419; //blinker position in csv
 	fseek(fp,419,SEEK_SET); //goes back to beg
 	char * buffer = malloc(sizeof(char)* bsize);
 	fread(buffer, bsize, sizeof(char), fp); //write csv to buffer
@@ -300,20 +300,11 @@ int main(int argc, char **argv){
 struct store* pass = (struct store*)malloc(sizeof(struct store* ));
 
 
-if (argc < 3)
-	{
-		fprintf(stderr, "usage %s hostname portnum\n", argv[0]);
-		exit(0);
-	}
-
-	// used later final=(row*)malloc(sizeof(row)*100);
-
-	
 
 
 
-odir = (char*)malloc(sizeof(char*)*200);	
- hostname = (char*)malloc(sizeof(char*)*50);;
+odir = (char*)malloc(sizeof(char*)*300);	
+ hostname = (char*)malloc(sizeof(char*)*20);;
 
 	
 
@@ -363,6 +354,22 @@ odir = (char*)malloc(sizeof(char*)*200);
 	k++;
 	}  // end while loop
 	
+if(c==0 || h == 0 || p == 0){
+printf("c,h,p paramaters are required\n");
+return 0;
+
+}
+
+
+if(d==0 ){
+	pass->dirname=cw;
+
+}
+
+if(o==0 ){
+	odir=cw;
+
+}
 
 
  if(strcmp(input,  "color")==0) colnumber=0;
@@ -394,7 +401,7 @@ odir = (char*)malloc(sizeof(char*)*200);
   else if(strcmp(input, "aspect_ratio")==0) colnumber=26;
   else if(strcmp(input, "movie_facebook_likes")==0) colnumber=27;
   else{
-
+	printf("invalid c argument- exiting\n");
     return 0;
 }	
 	//start
@@ -457,8 +464,18 @@ odir = (char*)malloc(sizeof(char*)*200);
 	//printf("bsize %ld\n",bsize);
 
 	write(sockfd,&tmp,sizeof(dump) ); 
-
-	close(sockfd);
+	int bl = 0;	
+	int tmpbl =0;
+	read(sockfd,&tmpbl,sizeof(tmpbl));
+	 bl = ntohl(tmpbl);
+//	printf("%d bl\n",bl);
+	
+	char buf[bl+1];
+	bzero(buf,bl+1);
+	read(sockfd,buf,bl);
+	//printf("%s\n",buf);
+	buf[bl-1]='\0';
+		close(sockfd);
 	
 
 	// this stuff is for creating the final csv
@@ -496,7 +513,50 @@ header.rToken[25]="imdb_score";
 header.rToken[26]="aspect_ratio";
 header.rToken[27]="movie_facebook_likes";	
 
+char* tp1 = "AllFiles";
+char* tp2 ="-sorted-";
+char* fil="/";
+char* tp3 ="<";
+char* tp4 =">";
+char* tp5 =".csv";
+char* csvfile=(char*)malloc(strlen(odir)+strlen(input)+40);
+
+	strcpy(csvfile,odir);
+		strcat(csvfile,fil);
+	strcat(csvfile,tp1);
+	strcat(csvfile,tp2);
+	strcat(csvfile,tp3);
+		strcat(csvfile,input);
+		strcat(csvfile,tp4);
+		strcat(csvfile,tp5);
+
+
 	
+FILE *fp;
+if(fp=fopen(csvfile,"w")){
+int i;
+i = 0;
+	//print 
+	while(i < 28){
+		fprintf(fp,"%s",header.rToken[i]);
+		if(i != 27){
+			fprintf(fp,",");
+		}else{
+			fprintf(fp,"\n");
+		}
+		i++;
+	}
+
+int j;
+fprintf(fp,"%s",buf);
+
+fclose(fp);
+
+
+}else{
+printf("final csv store but testor writing\n");
+
+}
 
 
 		

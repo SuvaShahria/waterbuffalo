@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
-#include "sorter_thread.h"
+#include "sorter_server.h"
 
 
 row* final;
@@ -28,7 +28,7 @@ char** tokenizer(char* tp, size_t numc){
     int k = 0;
     
     char** str =(char**)malloc(sizeof(char*)* (numc + 1)); 
-    char* tmp =(char*)malloc(sizeof(char*)*500);
+    char* tmp =(char*)malloc(sizeof(char*)*700);
 	
 size_t quote=1;
 	
@@ -139,7 +139,7 @@ pthread_mutex_lock(&mutex);
 int* c_socket;
 c_socket = (int*) arg;
 int cs = *c_socket;
-char rec[256];
+
 
 int colnumber = 0;
 	int tmp= 0;
@@ -155,10 +155,13 @@ int colnumber = 0;
 	char buffer[bsize+1]; // make buffer
 	bzero(buffer,bsize);
 		read(cs,buffer,bsize);
-	buffer[bsize] = '\0';
-	
+	buffer[strlen(buffer)-1] = '\0';
+	//printf("%s\n",buffer);
+		//printf("%d--x\n",strlen(buffer)  );
+//				printf("%d--x\n",bsize  );
+	//printf("%d--x",sizeof(buffer));
 
-	char** store = (char**)malloc(sizeof(char*) * 1501);
+	char** store = (char**)malloc(sizeof(char*) * 5000);
 	int store_c = 0;
 	char *p;
 	p =strtok(buffer,"\n");
@@ -170,7 +173,7 @@ int colnumber = 0;
 	}
 		row *data;
 
-	data = (row*) malloc (sizeof(row) * 5000);
+	data = (row*) malloc (sizeof(row) * 6000);
 	
 	size_t curr_col =0;
 	size_t atRow=0; 
@@ -199,7 +202,7 @@ row tmpRow;
 		fx = colnumber;
 	 size = size+rows +1;
 		row* d2;
-	d2=(row*)realloc (final,sizeof(row)*(size*+100) );
+	d2=(row*)realloc (final,sizeof(row)*(size+100) );
 	final = d2;
 	int q = 0;
 	for(q=0;q<rows;q++){
@@ -212,6 +215,8 @@ row tmpRow;
 	k++;
 	}	
 	//printf("%d---\n",finalcounter);	*/
+	free(data);
+	free(store);
 		pthread_mutex_unlock(&mutex);
 
 
@@ -223,7 +228,9 @@ c_socket = (int*) args;
 int cs = *c_socket;
 
 	mergeSort(final, fx, finalcounter);
-char buffer[6] = "water"; // make buffer
+		//printf("%s --",final[13].rText);
+	
+//char buffer[6] = "water"; // make buffer
 	//bzero(buffer,6);
 	/*
 		read(cs,buffer,6);
@@ -231,6 +238,56 @@ char buffer[6] = "water"; // make buffer
 
 	*/
 	//write(cs,buffer,6);
+
+
+
+	int fc = finalcounter;
+	
+	//char* tp1 = "AllFiles";
+	char* buffer=(char*)malloc(sizeof(char*)*500*fc);
+	bzero(buffer,500*fc);
+	//	strcpy(buffer,final[0].rToken[0]);
+	//printf("%s--\n",buffer);
+	//		strcat(buffer,final[0].rToken[0]);
+	//	char* buffer2=(char*)malloc(sizeof(char*)*500*fc);
+	//strcpy(buffer2,buffer);
+	//printf("%d--2\n",sizeof(buffer2));
+	//printf("%s--\n",csvfile);
+
+int i,j;
+
+i = 0;
+	 j = 0;
+	while(i < fc){
+		while(j < 28){
+			char* hold;
+
+	//hold = (char*)realloc (buffer,20000);
+				strcat(buffer,final[i].rToken[j]);
+			//fprintf(fp,"%s",final[i].rToken[j]);
+			//printf("\n%i %i",i,j);
+			if(j != 27){
+				strcat(buffer,",");
+			}else{
+				strcat(buffer,"\n");
+			}
+			j++;
+		}
+		i++;
+		j = 0;
+	}
+	//printf("%d--\n",strlen(buffer)  );
+//	write(cs,buffer,fc*500);
+int bl = strlen(buffer);
+	int tmpbl = htonl(bl);
+	write(cs,&tmpbl,sizeof(bl));
+	write(cs,buffer,strlen(buffer));	
+	//printf("%s\n",buffer);
+finalcounter=0;
+memset(final,0,sizeof(final));
+
+
+
 }
 
 
@@ -303,7 +360,7 @@ printf("--%d\n",port_num);
 		exit(EXIT_FAILURE);
 	}
 
-	printf("Waiting for connections...\n");
+	//printf("Waiting for connections...\n");
 	 tmp = sizeof(struct sockaddr_in);
 
 	int i = 0;
@@ -312,8 +369,10 @@ printf("--%d\n",port_num);
 	//inet6 size value i think its 46
 	    char ip_val[INET6_ADDRSTRLEN];
 	    int port2;
-	pthread_t* tid = (pthread_t*) calloc(256,sizeof(pthread_t));
+	pthread_t* tid = (pthread_t*) calloc(500,sizeof(pthread_t));
 
+	printf("Recieved connections from: ");
+		fflush(stdout);
 	//printf("%s",sendt);
 	while (1)
 	{
@@ -329,15 +388,15 @@ printf("--%d\n",port_num);
 
 			exit(EXIT_FAILURE);
 		}
-	printf("----port %d ----ip %s\n",ntohs(c_adr.sin_port), inet_ntoa(c_adr.sin_addr));
-		/*  len = sizeof(stor_adr);
+	//printf("<%s>",inet_ntoa(c_adr.sin_addr));
+		  len = sizeof(stor_adr);
         getpeername(c_sock, (struct sockaddr *)&stor_adr, &len);
         struct sockaddr_in *s = (struct sockaddr_in*) &stor_adr;
 	port2 = ntohs(s -> sin_port);
 	inet_ntop(AF_INET, &s->sin_addr, ip_val, sizeof ip_val);
-        printf("Client IP Address: (%s)\n", ip_val);
-	printf("Client Port      : (%d)\n", port2);
-	*/
+        printf("<%s>, ", ip_val);
+
+		fflush(stdout);
 	
 	int dump = 2;
 	
@@ -351,8 +410,10 @@ printf("--%d\n",port_num);
 	//printf("%d\n", i);	
 	pthread_create(&tid[i], NULL, sorter, &c_sock);
 	pthread_join(tid[i], NULL);
+
 	
 }else if(dump == 1){
+
 	dumpreq(&c_sock);
 	
 	//printf("%d\n", i);	
