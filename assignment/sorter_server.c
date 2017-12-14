@@ -165,12 +165,13 @@ int colnumber = 0;
 		row *data;
 
 	data = (row*) malloc (sizeof(row) * 5000);
-	row tmpRow;
-	tmpRow.rText = (char*) malloc (sizeof(char) * 1500);
+	
 	size_t curr_col =0;
 	size_t atRow=0; 
 	int rows = 0;
 	while(rows<=store_c){
+row tmpRow;
+	tmpRow.rText = (char*) malloc (sizeof(char) * 1500);
 	strcpy(tmpRow.rText,store[rows]);	
 	tmpRow.rowL =strlen(tmpRow.rText);
 	tmpRow.rToken =(char**) malloc(sizeof(char *)* (28+1));

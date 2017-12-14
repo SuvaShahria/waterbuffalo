@@ -1,4 +1,4 @@
-#include "sorter.h"
+#include "sorter_thread.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
