@@ -217,6 +217,21 @@ row tmpRow;
 
 }
 
+void dumpreq(void* args){
+int* c_socket;
+c_socket = (int*) args;
+int cs = *c_socket;
+
+	mergeSort(final, fx, finalcounter);
+char buffer[6] = "water"; // make buffer
+	//bzero(buffer,6);
+	/*
+		read(cs,buffer,6);
+		printf("%s buffer\n", buffer);	
+
+	*/
+	//write(cs,buffer,6);
+}
 
 
 int main (int argc, char* argv[]){
@@ -338,7 +353,8 @@ printf("--%d\n",port_num);
 	pthread_join(tid[i], NULL);
 	
 }else if(dump == 1){
-	printf("it works\n");
+	dumpreq(&c_sock);
+	
 	//printf("%d\n", i);	
 	}
 

@@ -457,6 +457,7 @@ odir = (char*)malloc(sizeof(char*)*200);
 	//printf("bsize %ld\n",bsize);
 
 	write(sockfd,&tmp,sizeof(dump) ); 
+
 	close(sockfd);
 	
 
