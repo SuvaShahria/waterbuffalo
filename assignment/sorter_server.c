@@ -11,8 +11,12 @@
 #include "sorter_thread.h"
 
 
-
-
+row* final;
+int finalcounter=0;
+int fx= 0;
+int nrows=0;
+int size = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 
@@ -129,6 +133,7 @@ tmp=txt;
 
 
 void sorter(void* arg){
+pthread_mutex_lock(&mutex);
 
 int* c_socket;
 c_socket = (int*) arg;
@@ -150,7 +155,7 @@ int colnumber = 0;
 	bzero(buffer,bsize);
 		read(cs,buffer,bsize);
 	buffer[bsize] = '\0';
-
+	
 
 	char** store = (char**)malloc(sizeof(char*) * 1501);
 	int store_c = 0;
@@ -169,6 +174,7 @@ int colnumber = 0;
 	size_t curr_col =0;
 	size_t atRow=0; 
 	int rows = 0;
+	
 	while(rows<=store_c){
 row tmpRow;
 	tmpRow.rText = (char*) malloc (sizeof(char) * 1500);
@@ -183,14 +189,29 @@ row tmpRow;
 				//printf("%s-----\n",data[x].rText);
 
 	rows++;
-	} 
+	} 		
 	//printf("%d---%d\n",colnumber,rows);
 	mergeSort(data, colnumber, rows);
-	int k = 0;
-	while(k<rows){
-				printf("%s-----\n",data[k].rText);
-	k++;
+	//ret bb
+
+
+		fx = colnumber;
+	 size = size+rows +1;
+		row* d2;
+	d2=(row*)realloc (final,sizeof(row)*(size*+100) );
+	final = d2;
+	int q = 0;
+	for(q=0;q<rows;q++){
+	final[finalcounter]=data[q];
+	finalcounter++;
 	}
+	int k = 0;
+	/*while(k<finalcounter-1){
+	printf("%s--",final[k].rText);
+	k++;
+	}	
+	//printf("%d---\n",finalcounter);	*/
+		pthread_mutex_unlock(&mutex);
 
 
 }
@@ -276,9 +297,7 @@ printf("--%d\n",port_num);
 	    char ip_val[INET6_ADDRSTRLEN];
 	    int port2;
 	pthread_t tid[500];
-	char sendt[256];
-	char* p = "water";	
-	strcpy(sendt,p);
+
 	//printf("%s",sendt);
 	while (1)
 	{
@@ -295,16 +314,16 @@ printf("--%d\n",port_num);
 			exit(EXIT_FAILURE);
 		}
 	printf("----port %d ----ip %s\n",ntohs(c_adr.sin_port), inet_ntoa(c_adr.sin_addr));
-		  len = sizeof(stor_adr);
+		/*  len = sizeof(stor_adr);
         getpeername(c_sock, (struct sockaddr *)&stor_adr, &len);
         struct sockaddr_in *s = (struct sockaddr_in*) &stor_adr;
 	port2 = ntohs(s -> sin_port);
 	inet_ntop(AF_INET, &s->sin_addr, ip_val, sizeof ip_val);
         printf("Client IP Address: (%s)\n", ip_val);
 	printf("Client Port      : (%d)\n", port2);
-
+	*/
 	
-	int dump = 0;
+	int dump = 2;
 	int tmp= 0;
 	read(c_sock,&tmp,sizeof(tmp));
 	dump = ntohl(tmp);
@@ -313,13 +332,14 @@ printf("--%d\n",port_num);
 
 	if(dump == 0){
 	pthread_create(&tid[i], NULL, sorter, &c_sock);
-	}else{
-
+	}else if(dump == 1){
+	printf("it works\n");
 
 	}
 
 
 	i++;
+
 
 	}
 

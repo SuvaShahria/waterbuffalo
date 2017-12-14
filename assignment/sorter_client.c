@@ -398,12 +398,68 @@ odir = (char*)malloc(sizeof(char*)*200);
     return 0;
 }	
 	//start
+
 		pthread_t tid1;
 		pthread_create(&tid1, NULL, (void *)openDir, (void*)pass);
 				pthread_join(tid1, NULL);
 	
+
+		
+	int sockfd;
+
 	
+	struct sockaddr_in address;
 	
+	struct hostent *server;
+
+	
+	server = gethostbyname(hostname);
+
+	if (server == NULL)
+	{
+
+		fprintf(stderr, "ERROR, NO SUCH HOST\n");
+		exit(0);
+	}
+	
+	memset(&address, 0, sizeof(address));
+
+	address.sin_family = AF_INET;
+
+	address.sin_port = htons(port);
+	
+	bcopy((char*)server->h_addr,
+			(char*)&address.sin_addr.s_addr,
+			server->h_length);
+	
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd < 0)
+	{
+		//perror() report error message
+		perror("sock");
+		//exit your program
+		exit(EXIT_FAILURE);
+	}
+
+	
+	if (connect(sockfd, (struct sockaddr*)&address, sizeof(address)) < 0)
+	{
+		// perror() report error message
+		perror("connect");
+		// close socket
+		close(sockfd);
+		// exit your program
+		exit(EXIT_FAILURE);
+	}
+	int dump = 1;
+	int tmp = htonl(dump); // googled how to pass int
+
+	//printf("bsize %ld\n",bsize);
+
+	write(sockfd,&tmp,sizeof(dump) ); 
+	close(sockfd);
+	
+
 	// this stuff is for creating the final csv
 row header;
 header.numc=28;
