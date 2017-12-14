@@ -155,6 +155,18 @@ int colnumber = 0;
 	char buffer[bsize+1]; // make buffer
 	bzero(buffer,bsize);
 		read(cs,buffer,bsize);
+
+
+	long te = strlen(buffer);
+	long tp = 0;
+	while(tp<te){
+	if(buffer[tp] == '^'){
+	buffer[tp] = '\n';
+	}	
+	tp++;
+	}	
+
+
 	buffer[strlen(buffer)-1] = '\0';
 	//printf("%s\n",buffer);
 		//printf("%d--x\n",strlen(buffer)  );
@@ -281,13 +293,25 @@ i = 0;
 	//printf("%d--\n",strlen(buffer)  );
 //	write(cs,buffer,fc*500);
 long bl = strlen(buffer);
-	printf("%ld\n",bl);
+	//printf("%ld\n",bl);
 	long tmpbl = htonl(bl);
 	write(cs,&tmpbl,sizeof(bl));
+
+
+	
+	long te = strlen(buffer);
+	long tp = 0;
+	while(tp<te){
+	if(buffer[tp] == '\n'){
+	buffer[tp] = '^';
+	}	
+	tp++;
+	}
+
 	write(cs,buffer,strlen(buffer));	
 	//printf("%s\n",buffer);*/
-finalcounter=0;
-memset(final,0,sizeof(final));
+//finalcounter=0;
+//memset(final,0,sizeof(final));
 
 
 
@@ -322,7 +346,7 @@ if(strcmp(argv[1],"-p")==0){
 
 port_num = atoi(charport);
 
-printf("--%d\n",port_num);
+//printf("--%d\n",port_num);
 	
 	int s_sock, c_sock, tmp;
 	
@@ -391,14 +415,17 @@ printf("--%d\n",port_num);
 
 			exit(EXIT_FAILURE);
 		}
-	//printf("<%s>",inet_ntoa(c_adr.sin_addr));
+
+        printf("<%s>, ", inet_ntop(AF_INET,&c_adr.sin_addr,ip_val, sizeof(ip_val))   );
+	
+	/*printf("<%s>",inet_ntoa(&c_adr));
 		  len = sizeof(stor_adr);
         getpeername(c_sock, (struct sockaddr *)&stor_adr, &len);
         struct sockaddr_in *s = (struct sockaddr_in*) &stor_adr;
 	port2 = ntohs(s -> sin_port);
 	inet_ntop(AF_INET, &s->sin_addr, ip_val, sizeof ip_val);
         printf("<%s>, ", ip_val);
-
+	*/
 		fflush(stdout);
 	
 	int dump = 2;

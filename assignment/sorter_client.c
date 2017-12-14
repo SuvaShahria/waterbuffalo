@@ -14,8 +14,6 @@
 #include <sys/types.h>
 
 
-#define PORT 9000
-#define ADDR 127.0.0.1
 
 #include <sys/wait.h>
 
@@ -94,6 +92,15 @@ int sockfd;
 	char * buffer = malloc(sizeof(char)* bsize);
 	fread(buffer, bsize, sizeof(char), fp); //write csv to buffer
 	int l = 1;
+	long te = strlen(buffer);
+	long tp = 0;
+	while(tp<te){
+	if(buffer[tp] == '\n'){
+	buffer[tp] = '^';
+	}	
+	tp++;
+	}
+	//printf("%s\n",buffer);
 	
 	int dump = 0;
 	int tmp = htonl(dump); // googled how to pass int
@@ -468,12 +475,23 @@ if(o==0 ){
 	long tmpbl =0;
 	read(sockfd,&tmpbl,sizeof(tmpbl));
 	 bl = ntohl(tmpbl);
-	printf("%ld\n",bl);
+	//printf("%ld\n",bl);
 //	printf("%d bl\n",bl);
 	
 	char buf[bl+1];
 	bzero(buf,bl+1);
 	read(sockfd,buf,bl);
+
+	long te = strlen(buf);
+	long tp = 0;
+	while(tp<te){
+	if(buf[tp] == '^'){
+	buf[tp] = '\n';
+	}	
+	tp++;
+	}	
+
+	
 	//printf("%s\n",buf);
 	buf[bl-1]='\0';
 		close(sockfd);
