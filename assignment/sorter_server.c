@@ -133,6 +133,7 @@ tmp=txt;
 
 
 void sorter(void* arg){
+
 pthread_mutex_lock(&mutex);
 
 int* c_socket;
@@ -277,7 +278,7 @@ printf("--%d\n",port_num);
 	}
 
 	
-	if (listen(s_sock, 300) < 0)
+	if (listen(s_sock, 128) < 0)
 	{
 
 		perror("listen");
@@ -296,7 +297,7 @@ printf("--%d\n",port_num);
 	//inet6 size value i think its 46
 	    char ip_val[INET6_ADDRSTRLEN];
 	    int port2;
-	pthread_t tid[500];
+	pthread_t* tid = (pthread_t*) calloc(256,sizeof(pthread_t));
 
 	//printf("%s",sendt);
 	while (1)
@@ -324,17 +325,21 @@ printf("--%d\n",port_num);
 	*/
 	
 	int dump = 2;
-	int tmp= 0;
-	read(c_sock,&tmp,sizeof(tmp));
-	dump = ntohl(tmp);
-
+	
+	int tmpx= 0;
+	read(c_sock,&tmpx,sizeof(tmpx));
+	dump = ntohl(tmpx);
+	
 	//printf("%d\n", dump);	
 
 	if(dump == 0){
+	//printf("%d\n", i);	
 	pthread_create(&tid[i], NULL, sorter, &c_sock);
-	}else if(dump == 1){
+	pthread_join(tid[i], NULL);
+	
+}else if(dump == 1){
 	printf("it works\n");
-
+	//printf("%d\n", i);	
 	}
 
 
